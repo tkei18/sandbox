@@ -1,0 +1,139 @@
+@CHARSET "UTF-8";
+
+body {
+    font-size: 12px;
+}
+
+.errorMessage {
+	color: #DE4830;
+}
+
+.infoMessage {
+	color: #0E7AC4;
+}
+
+.hmargin_10px {
+	width: 10px;
+}
+
+.hmargin_30px {
+	width: 30px;
+}
+
+.hmargin_40px {
+	width: 40px;
+}
+
+.hmargin_80px {
+	width: 80px;
+}
+
+.hmargin_120px {
+	width: 120px;
+}
+
+.hmargin_200px {
+	width: 200px;
+}
+
+.hmargin_300px {
+	width: 300px;
+}
+
+.hmargin_400px {
+	width: 400px;
+}
+
+.hmargin_600px {
+	width: 600px;
+}
+
+.leftMargin_5px {
+	margin-left: 5px;
+}
+
+.leftMargin_10px {
+	margin-left: 10px;
+}
+
+.leftMargin_20px {
+	margin-left: 20px;
+}
+
+.leftMargin_50px {
+	margin-left: 50px;
+}
+
+.leftMargin_60px {
+	margin-left: 60px;
+}
+
+.leftMargin_80px {
+	margin-left: 80px;
+}
+
+.leftMargin_100px {
+	margin-left: 100px;
+}
+
+.rightMargin_20px {
+	margin-right: 20px;
+}
+
+.bottonMargin_5px {
+	margin-bottom: 5px;
+}
+
+.vmargin_5px {
+	height: 5px;
+}
+
+.vmargin_10px {
+	height: 10px;
+}
+
+.vmargin_15px {
+	height: 15px;
+}
+
+.vmargin_20px {
+	height: 20px;
+}
+
+.vmargin_25px {
+	height: 25px;
+}
+
+.vmargin_30px {
+	height: 30px;
+}
+
+.vmargin_60px {
+	height: 60px;
+}
+
+.vmargin_65px {
+	height: 65px;
+}
+#loader-bg {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background: #ffffff;
+  z-index: 150;
+  text-align: center;
+  vertical-align: middle;
+}
+.loading {
+  display: none;
+  position: fixed;
+  width: 50px;
+  height: 50px;
+  top: 50%;
+  left: 50%;
+  z-index:200;
+  transform: translate(-50%, -50%);
+}

@@ -1,0 +1,500 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="components/loader.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet">
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    
+    <style type="text/css">
+	<!--
+		.alt-table-responsive {
+		    width: 100%;
+		    overflow-y: hidden;
+		    overflow-x: auto;
+		    -ms-overflow-style: -ms-autohiding-scrollbar;
+		    -webkit-overflow-scrolling: touch;
+		}
+	-->
+	</style>
+</head>
+<body>
+<div id="loader-bg">
+  <div id="loading"><img src="img/loading.gif"></div>
+</div>
+<section class="panel panel-default">
+  <div class="panel-heading">Visual Recognition サンプル・プログラム</div>
+  <div class="panel-body">
+    <ul class="nav nav-pills">
+      <li class="active"><a data-toggle="tab" href="#Home">Home</a>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Advanced<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li>
+            <a data-toggle="tab" href="#AdMenu1" onclick='ajaxLoadRequest();'>データ結果一覧</a>
+          </li>
+          <li>
+            <a data-toggle="tab" href="#AdMenu2">サブメニュー2</a>
+          </li>
+          <li>
+            <a data-toggle="tab" href="#AdMenu3">サブメニュー3</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div id="Home" class="tab-pane fade in active">
+        <h3>Home</h3>
+        <form class="form-horizontal" id="myForm" enctype="multipart/form-data" action="retrun false" style="margin-top: 30px;">
+          <div class="form-group">
+            <div class="col-sm-4">
+              <div id ="imgView" class="imagePreview img-rounded" style="display:none;background-color:#eeeeee"></div>
+              <div class="input-group">
+                <label class="input-group-btn">
+                  <span class="btn btn-primary">
+                     ファイル選択<input type="file" accept="image/*;capture=camera" id="uploadFile" name ="uploadFile" style="display:none" class="uploadFile" >
+                  </span>
+                </label>
+                <input type="text" class="form-control" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-4">
+              <button id="button1" type="button" class="btn btn-primary" onclick="ajaxUploadRequest(this);" >実行</button>
+            </div>
+          </div>
+        </form>
+        <div class="col-sm-8">
+          <table id="retTable" class="table table-bordered responsive table-hover"></table>
+        </div>
+        <div id="infoMessage" style="margin-top: 40px;" class="infoMessage"></div>
+        <div id="errorMessage" class="errorMessage"></div>
+        <div class="modal fade" id="retModal">
+    	  <div class="modal-dialog modal-sm">
+    	    <div class="modal-content">
+    	      <div class="modal-header">
+    		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    		<h4 class="modal-title">識別結果</h4>
+    	      </div>
+    	      <div id="retModalData" class="modal-body"></div>
+    	      <div class="modal-footer">
+    		<button type="button" class="btn btn-primary" data-dismiss="modal">閉じる</button>
+    	       </div>
+    	    </div>
+    	  </div>
+    	</div>
+      </div>
+      <div id="AdMenu1" class="tab-pane fade">
+        <h3>データ結果一覧</h3>
+        <div class="alt-table-responsive col-sm-8">
+          <table id="retLoadTable" class="table table-bordered responsive table-hover"></table>
+        </div>
+        <div id="infoLoadMessage" style="margin-top: 40px;" class="infoMessage"></div>
+        <div id="errorLoadMessage" class="errorMessage"></div>
+      </div>
+      <div id="AdMenu2" class="tab-pane fade">
+        <h3>サブメニュー2</h3>
+        <p>サブメニュー2のコンテンツが入ります。</p>
+      </div>
+      <div id="AdMenu3" class="tab-pane fade">
+        <h3>サブメニュー3</h3>
+        <p>サブメニュー3のコンテンツが入ります。</p>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="modal fade" id="modalWindow">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">ファイル識別結果</h4>
+      </div>
+      <div class="modal-body">
+        <div class="panel panel-primary">
+          <div class="panel-heading">VisualRecognition（処理結果）</div>
+          <div class="panel-body" id="vrResult">
+            <div class="result-body"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">閉じる</button>
+       </div>
+    </div>
+  </div>
+</div>
+  <script type="text/javascript">
+    window.onload = function(){
+      $(function(){
+        $("#loader-bg").fadeOut(500);
+        $("#loading").fadeOut(500);
+        $("#container").fadeIn(500);
+      });
+    }
+    // データUploadリクエスト送信処理
+    function ajaxUploadRequest(data) {
+      $("#loader-bg").fadeIn(500);
+      $("#loading").fadeIn(500);
+      $("#container").fadeOut(500);
+      $('#infoMessage').empty();
+      $('#errorMessage').empty();
+      $('#retModalData').empty();
+      $('#retTable').empty();
+      let formData = new FormData();
+      let $file = $('#uploadFile');
+      formData.append( $file.attr('name'), $file.prop("files")[0] );
+            
+      $.ajax({
+          async: true,
+          url: 'http://vrsample.mybluemix.net/api/classify',
+          type: 'POST',
+          cache: false,
+          processData: false,
+          contentType: false,
+          dataType: 'json',
+          data: formData
+        })
+        .done(function(response) {
+          let disp = true;
+          if (!response) {
+            $('#infoMessage').html('リターンなし');
+            disp = false;
+            return;
+          } 
+          if (response.images.length < 0) {
+            $('#infoMessage').html('リターンなし');
+            disp =  false;
+            return;
+          }
+          const images = response.images[0];
+          if (!images.classifiers) {
+              if (images.error){
+        		  const errId = images.error.error_id;
+              const errMsg = images.error.description;
+              $('#infoMessage').html(errId + ':' + errMsg);
+              disp =  false;
+              return;
+        	  } else {
+              $('#infoMessage').html('リターンなし');
+              disp =  false;
+              return;
+            }
+          }
+          if  (images.classifiers.length < 0) {
+            $('#infoMessage').html('リターンなし');
+            disp =  false;
+            return;
+          }
+          const classifiers = images.classifiers[0];
+          if (!images.classifiers) {
+            $('#infoMessage').html('リターンなし');
+            disp =  false;
+            return;
+          }
+          if (classifiers.classes.length < 0) {
+            $('#infoMessage').html('リターンなし');
+            disp =  false;
+            return;
+          }
+          
+          if(disp) {
+            let tbl = $('#retTable');
+            let tHead = $('<thead></thead>');
+            let rowHead = $('<tr></tr>');
+            let col1Head = $('<th class="active">class</th>');
+            let col2Head = $('<th class="active">score</th>');
+            rowHead.append(col1Head);
+            rowHead.append(col2Head);
+            tHead.append(rowHead);
+  
+            let tBody = $('<tbody></tbody>');
+            let resData = classifiers.classes;
+            $("#vrResult").html(watsonResult(resData));
+            for (let i = 0; resData.length > i; i++){
+                let rowBody = $('<tr></tr>');
+                let col1Body = $('<td></td>');
+                let col2Body = $('<td></td>');
+                col1Body.append(resData[i].class);
+                col2Body.append(resData[i].score);
+                rowBody.append(col1Body);
+                rowBody.append(col2Body);
+                if (i === 0) {
+                  let btnProp;
+                  let btnVal;
+                  rowBody.attr('class','success');
+                  if (resData[i].class === 'cup_ok') {
+                    btnProp = 'btn btn-info';
+                    btnVal = 'OK!'
+                  } else {
+                    btnProp = 'btn btn-warning';
+                    btnVal = 'NG!'
+                  }
+                  $('#retModalData').css('text-align', 'center');
+                  $('#retModalData').append('<div class="' + btnProp + '">' + btnVal + '</div>');
+                }
+                tBody.append(rowBody);
+            }
+            tbl.append(tHead);
+            tbl.append(tBody);
+          }
+          $("#container").fadeIn(500);
+          $("#loader-bg").fadeOut(500);
+          $("#loading").fadeOut(500);
+          $('#retModal').modal('show');
+          $("#modalWindow").modal();
+         })
+        .fail(function( jqXHR, textStatus, errorThrown ){
+          $('#errorMessage').html( 'システムエラーが発生しました。\n' + errorThrown);
+        })
+        .always(function(o){
+          $("#container").fadeIn(500);
+          $("#loader-bg").fadeOut(500);
+          $("#loading").fadeOut(500);
+        });
+     }
+    // Inputファイルの表示
+    $(document).on('change', ':file', function() {
+        const input = $(this),
+        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.parent().parent().next(':text').val(label);
+        var files = !!this.files ? this.files : [];
+        if (!files.length || !window.FileReader) {
+          return;
+        }
+        if (/^image/.test( files[0].type)){
+            const reader = new FileReader();
+            reader.readAsDataURL(files[0]);
+            reader.onloadend = function(){
+                $('.imagePreview').show();
+                input.parent().parent().parent().prev('.imagePreview').css("background-image", "url("+this.result+")");
+                $('.imagePreview').css('height','170px');
+                $('.imagePreview').css('background-size','45%');
+                $('.imagePreview').css('background-position','center');
+                $('.imagePreview').css('background-repeat','no-repeat');
+            };
+        }
+    });
+    
+    // データ表示リクエスト送信処理
+    function ajaxLoadRequest(data) {
+      $("#loader-bg").fadeIn(500);
+      $("#loading").fadeIn(500);
+      $("#container").fadeOut(500);
+      $('#infoLoadMessage').empty();
+      $('#errorLoadMessage').empty();
+      $('#retLoadTable').empty();
+            
+      $.ajax({
+          async: true,
+          url: 'http://vrsample.mybluemix.net/api/getList',
+          type: 'GET',
+          cache: false,
+          processData: false,
+          contentType: false,
+          dataType: 'json',
+        })
+        .done(function(response) {
+          let disp = true;
+          if (!response) {
+            $('#infoLoadMessage').html('リターンなし');
+            disp = false;
+            return;
+          } 
+          if (response.length < 0) {
+            $('#infoLoadMessage').html('リターンなし');
+            disp =  false;
+            return;
+          }
+          if(disp) {
+            let tbl = $('#retLoadTable');
+            let tHead = $('<thead></thead>');
+            let rowHead = $('<tr></tr>');
+            let col1Head = $('<th class="active">no</th>');
+            let col2Head = $('<th class="active">img</th>');
+            let col3Head = $('<th class="active">id</th>');
+            let col4Head = $('<th class="active">name</th>');
+            let col5Head = $('<th class="active">date</th>');
+            let col6Head = $('<th class="active">result</th>');
+            rowHead.append(col1Head);
+            rowHead.append(col2Head);
+            rowHead.append(col3Head);
+            rowHead.append(col4Head);
+            rowHead.append(col5Head);
+            rowHead.append(col6Head);
+            tHead.append(rowHead);
+  
+            let tBody = $('<tbody></tbody>');
+            response.sort(function(a,b){
+                if(a.date > b.date) return -1;
+                if(a.date < b.date) return 1;
+                return 0;
+            });   
+            for (let i = 0; response.length > i; i++){
+            	  let tarUrl = response[i].attachements[0].url;
+                let rowBody = $('<tr></tr>');
+                let col1Body = $('<td></td>');
+                let col2Body = $('<td></td>');
+                let col3Body = $('<td></td>');
+                let col4Body = $('<td></td>');
+                let col5Body = $('<td></td>');
+                let col6Body = $('<td></td>');
+                col1Body.append(i + 1);
+                col2Body.append('<img height="50" src="https://vrsample.mybluemix.net' + encodeUriAndQuotes(tarUrl) + '" onclick=\'window.open("' + encodeUriAndQuotes(tarUrl) + '");\'></img>');
+                col3Body.append(response[i].id);
+                col4Body.append(response[i].name);
+                col5Body.append(response[i].date);
+                if (response[i].result.images[0].error) {
+                    let errId = response[i].result.images[0].error.error_id;
+                    let errMsg = response[i].result.images[0].error.description;
+                    col6Body.append(errId + ':' + errMsg);
+                } else {
+                    let tarClasses = response[i].result.images[0].classifiers[0].classes;
+                    let btnProp;
+                    if (watsonResult(tarClasses)==='OK!') {
+                      btnProp = 'btn btn-info';
+                    } else {
+                      btnProp = 'btn btn-warning';
+                    }
+                    col6Body.append('<a class="' + btnProp + '" href="#modalWindow" data-toggle="modal" data-val="'+ JSON.stringify(tarClasses).replace(/\"/g,'\'') +'">' + watsonResult(tarClasses) + '</a>');
+                }
+                rowBody.append(col1Body);
+                rowBody.append(col2Body);
+                rowBody.append(col3Body);
+                rowBody.append(col4Body);
+                rowBody.append(col5Body);
+                rowBody.append(col6Body);
+                if (i === 0) {
+                  rowBody.attr('class','success');
+                }
+                tBody.append(rowBody);
+            }
+            tbl.append(tHead);
+            tbl.append(tBody);
+          }
+          $("#container").fadeIn(500);
+          $("#loader-bg").fadeOut(500);
+          $("#loading").fadeOut(500);
+         })
+        .fail(function( jqXHR, textStatus, errorThrown ){
+          $('#errorLoadMessage').html( 'システムエラーが発生しました。\n' + errorThrown);
+        })
+        .always(function(o){
+          $("#container").fadeIn(500);
+          $("#loader-bg").fadeOut(500);
+          $("#loading").fadeOut(500);
+        });
+     }
+    function encodeUriAndQuotes(untrustedStr) {
+        return encodeURI(String(untrustedStr)).replace(/'/g, '%27').replace(')', '%29');
+    }
+    function watsonResult(resData) {
+        resData.sort(function(a,b){
+            if(a.score > b.score) return -1;
+            if(a.score < b.score) return 1;
+            return 0;
+        });   
+        if (resData[0].class === 'cup_ok'){
+          return 'OK!';
+        } else {
+          return 'NG!';
+        }
+    }
+    $('#modalWindow').on('show.bs.modal', function(event) {
+        const aNode = $(event.relatedTarget);
+        const jsonVal = aNode.data('val');
+        let modal = $(this);
+        modal.find('.modal-body .panel-body .result-body').empty();
+        modal.find('.modal-body .panel-body .result-body').append(getTable(jsonVal.replace(/\'/g,'"')));
+      });
+    
+    function getTable(param) {
+    	let obj = JSON.parse(param);
+        obj.sort(function(a,b){
+            if(a.score > b.score) return -1;
+            if(a.score < b.score) return 1;
+            return 0;
+        });   
+        let tbl = $('<table id="retModalTable" class="table table-bordered responsive table-hover"></table>');
+        let tHead = $('<thead></thead>');
+        let rowHead = $('<tr></tr>');
+        let col1Head = $('<th class="active">class</th>');
+        let col2Head = $('<th class="active">score</th>');
+        rowHead.append(col1Head);
+        rowHead.append(col2Head);
+        tHead.append(rowHead);
+        let tBody = $('<tbody></tbody>');
+        for (let i = 0; obj.length > i; i++){
+            let rowBody = $('<tr></tr>');
+            let col1Body = $('<td></td>');
+            let col2Body = $('<td></td>');
+            col1Body.append(obj[i].class);
+            col2Body.append(obj[i].score);
+            rowBody.append(col1Body);
+            rowBody.append(col2Body);
+            if (i === 0) {
+              rowBody.attr('class','success');
+            }
+            tBody.append(rowBody);
+        }
+        tbl.append(tHead);
+        tbl.append(tBody);
+        return tbl;
+    }
+    var image = '';
+	
+	// 撮影
+	function camera(){
+		// カメラ起動
+		navigator.camera.getPicture (onSuccess, onFail, {
+			quality: 90, // 画質
+			destinationType: Camera.DestinationType.DATA_URL, // base64encodeされた値で取得
+			sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY, //☆これを入れるとライブラリから選択になる
+			targetWidth:500, // 取得する画像の横幅
+			targetHeight:500, // 取得する画像の高さ
+			allowEdit: true, // 正方形にトリミングするかどうか
+			encodingType: 'JPEG', // 形式（JPEG or PNG）
+			correctOrientation: true, // 撮影時と同じ向きに写真を回転
+			saveToPhotoAlbum: false, // 撮影後、端末のアルバムに画像を保存
+		});
+	
+		// 成功した際に呼ばれるコールバック関数
+		function onSuccess (imageData) {
+			// 写真データがあれば挿入
+			if(typeof(imageData) != 'undefined' && imageData != '') {
+				
+				// データ保持
+				image = imageData;
+				const imgText =  'url(data:image/jpeg;base64,' + imageData ;
+				// 挿入
+                $('.imagePreview').show();
+                $('.imagePreview').css("background-image", "url("+imgText+")");
+                $('.imagePreview').css('height','170px');
+                $('.imagePreview').css('background-size','45%');
+                $('.imagePreview').css('background-position','center');
+                $('.imagePreview').css('background-repeat','no-repeat');
+
+                /*$('.imgView').attr({
+                    'background-image': imgText,
+                    'display':'block'});*/
+			}
+		}
+	
+		// 失敗した場合に呼ばれるコールバック関数
+		function onFail (message) {
+			alert('キャンセルしました。');
+		}
+	}
+    </script>
+</body>
+
+</html>
