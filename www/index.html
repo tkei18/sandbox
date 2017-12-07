@@ -59,7 +59,7 @@
               <div class="input-group">
                 <label class="input-group-btn">
                   <span class="btn btn-primary">
-                     ファイル選択<input type="file" accept="image/*;capture=camera" id="uploadFile" name ="uploadFile" style="display:none" class="uploadFile" >
+                     ファイル選択<input type="file" accept="image/*;capture=camera" id="uploadFile" name ="uploadFile" style="display:none" class="uploadFile" onchange="clearTable();">
                   </span>
                 </label>
                 <input type="text" class="form-control" readonly>
@@ -450,6 +450,13 @@
         tbl.append(tBody);
         return tbl;
     }
+    
+    function clearTable(){
+      $('#infoLoadMessage').empty();
+      $('#errorLoadMessage').empty();
+      $('#retTable').empty();    
+    }
+    
     var image = '';
 	
 	// 撮影
